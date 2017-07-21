@@ -1,0 +1,130 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+#remove.packages(c("ggplot2"))
+#install.packages('Rcpp', dependencies = TRUE)
+#install.packages('ggplot2', dependencies = TRUE)
+
+install.packages("gapminder")
+library(gapminder)
+
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file).
+
+```{r}
+data("gapminder")
+summary(gapminder)
+x <- mean(gapminder$gdpPercap)
+x
+```
+
+```{r}
+attach(gapminder)
+median(pop)
+hist(lifeExp)
+
+```
+```{r}
+hist(log(pop))
+```
+
+```{r}
+boxplot(lifeExp ~ continent)
+```
+```{r}
+plot(lifeExp ~ gdpPercap)
+```
+```{r}
+plot(lifeExp ~ log(gdpPercap))
+```
+
+```{r}
+#install.packages("dplyr")
+library(dplyr)
+```
+
+```{r}
+gapminder %>%
+  select(country, lifeExp)
+```
+```{r}
+gapminder %>%
+  select(country, lifeExp) %>%
+  filter(country== "South Africa" |
+           country == "Ireland")
+```
+```{r}
+gapminder %>%
+  select(country, lifeExp) %>%
+  filter(country== "South Africa" |
+           country == "Ireland") %>%
+  group_by(country) %>%
+  summarise(Average_life = mean(lifeExp))
+```
+```{r}
+df1 <- gapminder %>%
+  select(country, lifeExp) %>%
+  filter(country== "South Africa" |
+           country == "Ireland") 
+
+t.test(data = df1, lifeExp ~ country)
+```
+
+```{r}
+#install.packages("lazyeval")
+library(ggplot2)
+
+df2 <- gapminder %>%
+  filter(gdpPercap < 50000)
+  
+ggplot(df2, aes(x=gdpPercap, y=lifeExp))+
+  geom_point()
+```
+```{r}
+ggplot(df2, aes(x=gdpPercap, y=lifeExp, col=continent))+
+  geom_point()
+```
+```{r}
+ggplot(df2, aes(x=log(gdpPercap), y=lifeExp, col=continent, size=pop))+
+  geom_point(alpha=0.3)
+```
+```{r}
+ggplot(df2, aes(x=log(gdpPercap), y=lifeExp, col=continent, size=pop))+
+  geom_point(alpha=0.3)+
+  geom_smooth(method=lm)
+```
+```{r}
+ggplot(df2, aes(x=log(gdpPercap), y=lifeExp, col=continent, size=pop))+
+  geom_point(alpha=0.3)+
+  geom_smooth(method=lm)+
+  facet_wrap(~continent)
+```
+```{r}
+ggplot(df2, aes(x=log(gdpPercap), y=lifeExp, col=year, size=pop))+
+  geom_point(alpha=0.3)+
+  geom_smooth(method=lm)+
+  facet_wrap(~continent)
+```
+```{r}
+#line fit (regression) of lifeExp vs gdpPercap with summary
+summary(lm(lifeExp ~ gdpPercap))
+```
+```{r}
+#multi-variable regression: lifeExp as a function of gdpPercap and pop
+summary(lm(lifeExp ~ gdpPercap + pop))
+```
+```{r}
+#multi-variable regression: lifeExp as a function of gdpPercap and pop
+# with independent variables log transformed to linearize.
+summary(lm(lifeExp ~ log(gdpPercap) + log(pop)))
+```
